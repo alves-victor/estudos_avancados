@@ -1,9 +1,10 @@
 import { Container } from "./style";
+import Register from "../../components/register";
 
 const Home = () => {
     return(
         <Container>
-            texto muito incrivel
+            <Register/>
         </Container>
     );
 }
