@@ -3,15 +3,59 @@ import { RegisterBG, Title, } from "./style";
 
 const Register = () => {
 
-    const [register, setRegister] = useState("");
+    const [user, setUser] = useState("");
 
+    //return alert(user.name);
+
+    const get = async () => {
+        const user = await fetch("http://localhost:21262")
+        .then(res => res.json())
+	    .then(data => { console.log("Sucesso:", data); })
+        .catch(erro => { if(erro){ console.error("Erro:", erro); }});
+    }
+      
+    const userData = { nome: user };
+    
+    const post = async () => {
+        await fetch("http://localhost:21262/add", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+        })
+        .then(response => response.json())
+        .then(data => {   
+            console.log("Success:", data); })
+        .catch(error => {
+                console.error("Error:", error);
+  	    });
+    }
+
+    const deletar = async () => {
+        await fetch(`http://localhost:21262/${user}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+        .then(res => res.json())
+	    .then(data => { 
+            if(data == "Usuário não existe!"){
+                console.error(data)
+            }else{
+                console.log("Sucesso", data);
+            }
+             
+        })
+        .catch(erro => { if(erro){ console.error("Erro:", erro); }});
+    }
+    
     function handleKeyPress(e){
         if(e.key === 'Enter'){
-            const post = async () => {
-                const user = await fetch("url")
-                .then(res => res.json())
-                .catch(e => {if(e){ alert(`Erro ${e}`); }});
-            }
+            //get();
+            //post();
+            deletar();
         }
     }
 
@@ -23,7 +67,7 @@ const Register = () => {
 
             <input 
                 placeholder="Registrar Pessoa"
-                onChange={(event) => setRegister(event.target.value)}
+                onChange={(event) => setUser(event.target.value)}
                 onKeyPress={handleKeyPress}
             />
 
