@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { RegisterBG, Title, } from "./style";
+import { Main, Title, Submit} from "./style";
+import Button from "../Button";
 
 const Register = () => {
 
     const [user, setUser] = useState("");
 
-    //return alert(user.name);
-
+    //REQUISIÇÕES
     const get = async () => {
-        const user = await fetch("http://localhost:21262")
+        await fetch("http://localhost:21262")
         .then(res => res.json())
-	    .then(data => { console.log("Sucesso:", data); })
+	    .then(data => { alert(`Nomes cadastrados: ${data}`); })
         .catch(erro => { if(erro){ console.error("Erro:", erro); }});
     }
       
@@ -24,12 +24,9 @@ const Register = () => {
             },
             body: JSON.stringify(userData),
         })
-        .then(response => response.json())
-        .then(data => {   
-            console.log("Success:", data); })
-        .catch(error => {
-                console.error("Error:", error);
-  	    });
+        .then(res => res.json())
+        .then(data => { alert(`Adição concluída: ${data}`); })
+        .catch(error => { console.error("Error:", error); });
     }
 
     const deletar = async () => {
@@ -41,37 +38,76 @@ const Register = () => {
         })
         .then(res => res.json())
 	    .then(data => { 
-            if(data == "Usuário não existe!"){
-                console.error(data)
+            if(data === "Usuário não existe!"){
+                console.error("Erro: ", data)
             }else{
-                console.log("Sucesso", data);
+                alert(`Exclusão concluída: ${data}`);
             }
              
         })
         .catch(erro => { if(erro){ console.error("Erro:", erro); }});
     }
     
-    function handleKeyPress(e){
-        if(e.key === 'Enter'){
-            //get();
-            //post();
+    //FAZER AS REQUISIÇÕES DE ACORDO COM CADA BOTÃO
+    function handleClick(e, type){
+        e.preventDefault();
+        if(type === 'get'){
+            get();
+        }else if(type === 'post'){
+            post();
+        }else{
             deletar();
         }
     }
 
+    //COR DOS BOTÕES
+    const cores = {
+        verde: { backgroundColor: 'green'},
+        azul: { backgroundColor: 'blue'},
+        vermelho: {backgroundColor: 'red'}
+    };
+
+    const div = {
+        margin: '0 auto',
+        display: 'flex',
+        width: '70%'
+    }
+
+    //RETORNO DO COMPONENTE
     return(
-        <RegisterBG>
+        <Main>
             <Title>
-                Registro
+                Visualize, adicione ou exclua nomes.
             </Title>
 
-            <input 
-                placeholder="Registrar Pessoa"
+            <Submit 
                 onChange={(event) => setUser(event.target.value)}
-                onKeyPress={handleKeyPress}
             />
+            
+            <div style={div}>
+                <Button 
+                    style={cores.verde}
+                    onClick={e => handleClick(e, 'get')}
+                > 
+                    GET 
+                </Button>
 
-        </RegisterBG>
+                <Button 
+                    style={cores.azul}
+                    onClick={e => handleClick(e, 'post')}
+                > 
+                    POST
+                </Button>
+
+                <Button 
+                    style={cores.vermelho}
+                    onClick={e => handleClick(e, 'delete')}
+                > 
+                    DELETE
+                </Button>
+            </div>
+
+        </Main>
     );
 }
 
